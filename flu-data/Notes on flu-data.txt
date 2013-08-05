@@ -1,0 +1,2 @@
+*Notes on mote files*
+We can probably ignore local sequence and sender sequence as we can determine contact time by global timestamp. Plus the sequence stuff seems inconsistent and confusing.
