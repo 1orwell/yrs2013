@@ -1,5 +1,3 @@
-#this module handles interactions between nodes to be used in the virus-spread.py module
-
 import operator
 from os import listdir
 from os.path import isfile, join
@@ -19,7 +17,7 @@ def get_dict_of_all_contacts(datapath):
             numlist = line.split()
             if len(numlist) < 5:
                 continue
-            node = numlist[0]
+            node = int(numlist[0])
             time = int(numlist[-1])
             if time not in node_contacts:
                 node_contacts[time] = [node]
@@ -28,7 +26,7 @@ def get_dict_of_all_contacts(datapath):
             line = f.readline()
         nodename = datafile[5:]
         #this line strips the .txt from the file
-        nodename = filter(type(nodename).isdigit, nodename)
+        nodename = int(filter(type(nodename).isdigit, nodename))
         dict_of_all_contacts[nodename] = node_contacts
         f.close()
     return dict_of_all_contacts
@@ -42,8 +40,6 @@ def calculateMaxTime(contact_dict):
             if time > maxtime:
                 maxtime = time
     return maxtime
-
-
 
 
 #below is the old infected code
