@@ -1,3 +1,5 @@
+#this module handles interactions between nodes to be used in the virus-spread.py module
+
 import operator
 from os import listdir
 from os.path import isfile, join
@@ -40,6 +42,8 @@ def calculateMaxTime(contact_dict):
             if time > maxtime:
                 maxtime = time
     return maxtime
+
+
 
 
 #below is the old infected code
