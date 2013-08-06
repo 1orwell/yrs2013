@@ -12,10 +12,10 @@ from node_interactions import get_dict_of_all_contacts, calculateMaxTime
 def simple_virus():
     infected = [1]
     
-    print dict_of_all_contacts
-    
     dict_of_all_contacts = get_dict_of_all_contacts('fake-data/moteFiles')
     maxtime = calculateMaxTime(dict_of_all_contacts)
+
+    print dict_of_all_contacts
     
     for tick in range(0,maxtime+1):
         print "Tick",tick
@@ -28,7 +28,8 @@ def simple_virus():
             else:
                 interactions="nothing"
             if interactions != "nothing":
-                print "Node",node,"interacts with",interactions
+                #print "Node",node,"interacts with",interactions
+                continue
 
     return infected
 
