@@ -15,22 +15,30 @@ def simple_virus():
     dict_of_all_contacts = get_dict_of_all_contacts('fake-data/moteFiles')
     maxtime = calculateMaxTime(dict_of_all_contacts)
 
-    print dict_of_all_contacts
-    
+    #print dict_of_all_contacts
+
+    #tick through time
     for tick in range(0,maxtime+1):
         print "Tick",tick
 
+        new_infected = []
+        
+        #for every infected node...
         for infected_node in infected:
+            #get the dictionary of its interactions
             time_dict = dict_of_all_contacts[infected_node]
+            #check if it interacts in this time frame
             if tick in time_dict:
-                interactions = time_dict[tick]
-                infected.append(time_dict[tick])
-            else:
-                interactions="nothing"
-            if interactions != "nothing":
-                #print "Node",node,"interacts with",interactions
-                continue
+                #iterate through all interactions between infected and targets
+                for interaction in time_dict[tick]:
+                    #check they haven't been infected this tick or in an earlier tick
+                    if interaction not in infected:
+                        if interaction not in new_infected:
+                            new_infected.append(interaction)
 
+        infected.extend(new_infected)
+        #print infected
+        
     return infected
 
 infected = simple_virus()
