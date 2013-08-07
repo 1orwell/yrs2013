@@ -8,7 +8,7 @@ Format is
 fin = 'movement-50.dat'
 
 ###
-
+from sets import Set
 import pickle, random
 from collections import defaultdict
 
@@ -21,17 +21,19 @@ class Simulation(object):
 		self.locations = {x: Location() for x in movement}
 		self.queue = defaultdict(list, {0: [People(v, x.iteritems()) for v,x in movement.items()]})
 		self.stage = 0
+		self.people = self.queue[0]
 	def step(self):
 		#empty queue for the step and move people
 		for person in self.queue[self.stage]:
 			try:
 				new_time, new_location = person.movement.next()
-				person.move(self.locations[new_location])
+				person.move(self.locations[person.nextLocation])
 				self.queue[new_time].append(person)
+				person.nextLocation = new_location
 			except StopIteration:
 				# No more movement from that person
 				print str(person.name) + " end of cycle"
-		#carry out infection on each location
+		#carry out infection on each locatio.add
 		for cell in self.locations.itervalues():
 			cell.infect()
 		self.stage+=1
@@ -40,7 +42,8 @@ class Simulation(object):
 	def infected(self): return [person.name for person in self.queue[0] if person.infected]
 	def positions(self):
 		for name, location in self.locations.iteritems():
-			print str(name) + ' - ' + ','.join(map(lambda x: str(x.name), location.contents))		
+			inf = 'I' if  any(map(lambda x: x.infected, location.contents)) else ''
+			print inf + ' ' + str(name) + ' - ' + ','.join(map(lambda x: str(x.name), location.contents))		
 			
 
 #possible position 
@@ -71,8 +74,9 @@ class People(object):
 		self.infectcount = 0
 		self.infected = False
 		self.location = None
-		#iterator of movement locations and times
-		move.next() #spend position 0
+		time, location = move.next()
+		self.nextLocation = location
+		#iterator of movement locations and times	
 		self.movement = move
 	def infect(self):
 		#infection logic

@@ -47,6 +47,18 @@ def distance(x, y): return math.sqrt((x[0] - y[0])**2 +  (x[1] - y[1])**2)
 order =  sorted(enumerate(l.coords), key = lambda x: distance(x[1], l.centroid()))
 order = [x[0] for x in order]
 
+#work out mininum global time
+mintime = 1000 #must be less than this
+for x in order:
+	if x == 0: continue
+	with open('./flu-data/moteFiles/node-'+str(x)) as fin:
+		line = fin.readline()
+		if line: 
+			t = int(line.split()[-1])
+			if t < mintime:
+				mintime = t
+
+
 completed = []
 times = {} 
 print 'Generating movement file'
@@ -58,7 +70,7 @@ for node in order:
     for contact in f:
         line = map(int, contact.split())
         contact_id = line[0]
-        time = line[-1]
+        time = (line[-1] - mintime + 1)
         if contact_id in completed:
             current_max = 0
             current_time = -1
