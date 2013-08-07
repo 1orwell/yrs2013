@@ -38,7 +38,9 @@ class Simulation(object):
 	
 	#utility functions
 	def infected(self): return [person.name for person in self.queue[0] if person.infected]
-			
+	def positions(self):
+		for name, location in self.locations.iteritems():
+			print str(name) + ' - ' + ','.join(map(lambda x: str(x.name), location.contents))		
 			
 
 #possible position 
@@ -70,6 +72,7 @@ class People(object):
 		self.infected = False
 		self.location = None
 		#iterator of movement locations and times
+		move.next() #spend position 0
 		self.movement = move
 	def infect(self):
 		#infection logic
@@ -80,6 +83,7 @@ class People(object):
 	def move(self, new):
 		if self.location: self.location.leave(self)
 		self.infectcount = 0
+		self.location = new
 		new.into(self)
 
 s = Simulation(ms)
