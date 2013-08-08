@@ -47,6 +47,11 @@ def distance(x, y): return math.sqrt((x[0] - y[0])**2 +  (x[1] - y[1])**2)
 order =  sorted(enumerate(l.coords), key = lambda x: distance(x[1], l.centroid()))
 order = [x[0] for x in order]
 
+#dump coords file
+print "Dumping coords file"
+pickle.dump(l.coords, open('coords.dat', 'w'))
+
+
 #work out mininum global time
 mintime = 1000 #must be less than this
 for x in order:
