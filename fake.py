@@ -87,6 +87,9 @@ def run_day(day):
                         current_time = t
                 position = current_max
                 times[node][time] = position
+            else:
+                times[node][time] = 'free'
+	
         completed.append(node)
         f.close()
 
