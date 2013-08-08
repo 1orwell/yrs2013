@@ -34,6 +34,7 @@ class Simulation(object):
 		for person in self.queue[self.stage]:
 			try:
 				new_time, new_location = person.movement.next()
+				person.move(self.locations[person.nextLocation])
 				self.queue[new_time].append(person)
 				person.move(self.locations[person.nextLocation])
 				person.nextLocation = new_location
@@ -55,8 +56,6 @@ class Simulation(object):
 		for name, location in self.locations.iteritems():
 			inf = 'I' if  any(map(lambda x: x.infected, location.contents)) else ''
 			print inf + ' ' + str(name) + ' - ' + ','.join(map(lambda x: str(x.name), location.contents))           
-	def free(self):
-		return [x for x in self.locations.values() if not x.contents]
 			
 
 #possible position 

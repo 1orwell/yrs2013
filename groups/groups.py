@@ -4,6 +4,7 @@ class Group(object):
 		self.members = []
 		self.together = False
 		self.teachers = []
+		self.location = 0
 	
 		
 
