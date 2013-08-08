@@ -7,10 +7,11 @@ f = open('virus.dat')
 data = pickle.load(f)
 
 green = pygame.image.load("images/green.png")
+red = pygame.image.load("images/red.png")
 
 def changeCoords(cs):
     x, y = cs
-    return ((x * 100) + width/2, (y* 100) + height /8)
+    return ((x * 100) + width/2 + 30, (y* 100) + height /8 -150)
 
 
 pygame.init()
@@ -28,6 +29,7 @@ clock = pygame.time.Clock()
 FPS = 24 #24 frames per second
 i = 0
 node_dict = {}
+FPC = 6
 
 
 
@@ -47,11 +49,13 @@ time =1
 #while loop allows black screen to stay open and close properly
 while True:
     #PROCESSES
-    if time % FPS == 23:
-        if time in mvs:
-            for person, move in mvs[time]:
+    if time % FPC == FPC-1:
+        print virus[time/FPC]
+        print mvs[time/FPC]
+        print time/FPC
+        if time/FPC in mvs:
+            for person, move in mvs[time/FPC]:
                 targets[person-1] = coords[move-1]
-    print pygame.time.get_ticks()
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             pygame.quit()
@@ -64,8 +68,12 @@ while True:
     for i, o in enumerate(people[::]):
         x,y = o.x, o.y
         target_x, target_y = tuple(targets[i])
-        targetVector_x, targetVector_y = ((target_x - x)/FPS, (target_y - y)/FPS)
-        people.append(screen.blit(green, (x+ targetVector_x, y + targetVector_y)))
+        targetVector_x, targetVector_y = ((target_x - x)/FPC, (target_y - y)/FPC)
+        if i-1 not in virus[time/FPC]:
+            people.append(screen.blit(green, (x+ targetVector_x, y + targetVector_y)))
+        else:
+            people.append(screen.blit(red, (x+ targetVector_x, y + targetVector_y)))
+
     people = people[num_of_nodes:]
 
     def moves():
