@@ -28,7 +28,7 @@ def run_day(day):
         with open('./flu-data/edgeLists/durationCondition/addThenChop/dropoff=0/minimumDuration=1/deltaT=1620/staticWeightedEdgeList_at=1350_min=540_max=2159.txt') as edges:
             for edge in edges:
                 u, v, w = map(int, edge.split())
-                g[u, v] = 1/w
+                g[u, v] = 1.0/w
         g.delete_vertices(g.vs(_degree_eq = 0))
         pickle.dump(g,open('dump.dat','w'))   
         print 'Finished'
