@@ -5,7 +5,7 @@ Format is
 
 '''
 #Options
-fin = 'movement-50.dat'
+fin = './days/movement-50-0.dat'
 chance_of_infection = 1/36.0
 
 
@@ -21,7 +21,7 @@ class Simulation(object):
 	def __init__(self, movement):
 		#self.movement = movement
 		#Create a blank node for each position and initialise queue with initial positions
-		self.locations = {x: Location() for x in movement}
+		self.locations = {x: Location(x) for x in movement}
 		self.queue = defaultdict(list, {0: [People(v, x.iteritems()) for v,x in movement.items()]})
 		#format of queue is {tick:[person,person,etc.]}
 		self.stage = 0
@@ -59,7 +59,8 @@ class Simulation(object):
 
 #possible position 
 class Location(object):
-	def __init__(self):
+	def __init__(self, name):
+		self.name     = name 
 		self.contents = []
 		self.infected = 0
 	
@@ -80,7 +81,7 @@ class Location(object):
 		if p.infected: self.infected -= 1
 
 	def __str__():
-		return 'Location'
+		return 'Location ' + str(name)
 	
 #person class
 class People(object):
@@ -111,6 +112,7 @@ class People(object):
 		self.infectcount = 0
 		self.location = new
 		new.into(self)
+		moves.append((self.name, new.name))
 
 	def __str__():
 		return 'Person ' + str(person.name)
@@ -122,16 +124,19 @@ s = Simulation(ms)
 s.people[32].infected = True
 #format: key = tick, value = list of infected people
 infected_per_tick = dict()
-
-for tick in range(0,2000):
+moves_per_tick = {}
+for tick in range(0, 2000):
 	print tick
+	moves = []
 	s.step()
+	moves_per_tick[tick] = moves
 	infected_per_tick[tick] = s.infected()
 
 print 'Simulation finished'
 print 'Writing to .dat file'
 output = 'virus.dat'
 pickle.dump(infected_per_tick, open(output, 'w'))
+pickle.dump(moves_per_tick, open('elise-moves.dat', 'w'))
 print 'finished writing'
 
 

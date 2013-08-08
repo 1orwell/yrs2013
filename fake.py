@@ -12,7 +12,7 @@ from collections import OrderedDict
     
 def run_day(day):
     
-    output = './days/movement-50_'+str(day)+'.dat'
+    output = './days/movement-'+str(size)+'-'+str(day)+'.dat'
     
     try:
         #load graph if previously generated.
@@ -53,7 +53,7 @@ def run_day(day):
 
     #dump coords file
     print "Dumping coords file"
-    pickle.dump(l.coords, open('./days/coords'+str(day)+'.dat', 'w'))
+    pickle.dump(l.coords, open('./days/coords-'+str(size)+'-'+str(day)+'.dat', 'w'))
 
 
     #work out mininum global time
