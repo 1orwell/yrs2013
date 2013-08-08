@@ -98,7 +98,7 @@ class People(object):
 		#if self.infectcount == 10: self.infected = True
 		#elif self.infectcount > 5 and random.random() > 0.5: self.infected = True
 		#self.infectcount += 1
-                if !self.infected:
+		if self.infected == False:
 			infection_chance = random.random()
 			if infection_chance <= chance_of_infection:
 					self.infected = True
@@ -120,10 +120,21 @@ class People(object):
 s = Simulation(ms)
 
 s.people[32].infected = True
+#format: key = tick, value = list of infected people
+infected_per_tick = dict()
 
 for tick in range(0,2000):
 	print tick
 	s.step()
+	infected_per_tick[tick] = s.infected()
+
+print 'Simulation finished'
+print 'Writing to .dat file'
+output = 'virus.dat'
+pickle.dump(infected_per_tick, open(output, 'w'))
+print 'finished writing'
+
+
 
 
 '''
