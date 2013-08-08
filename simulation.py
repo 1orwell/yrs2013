@@ -5,7 +5,7 @@ Format is
 
 '''
 #Options
-fin = './days/movement-50-0.dat'
+fin = './days/50-0.dat'
 chance_of_infection = 1/36.0
 
 
@@ -15,8 +15,9 @@ import pickle, random
 from collections import defaultdict
 import time
 
-ms = pickle.load(open(fin))
-
+data = pickle.load(open(fin))
+coords = data['coords']
+ms = data['movement']
 class Simulation(object):
 	def __init__(self, movement):
 		#self.movement = movement
@@ -133,10 +134,10 @@ for tick in range(0, 2000):
 	infected_per_tick[tick] = s.infected()
 
 print 'Simulation finished'
-print 'Writing to .dat file'
+print 'Writing to virus.dat file'
 output = 'virus.dat'
-pickle.dump(infected_per_tick, open(output, 'w'))
-pickle.dump(moves_per_tick, open('elise-moves.dat', 'w'))
+out = {'coords': coords, 'virus': infected_per_tick, 'moves': moves_per_tick}
+pickle.dump(out, open(output, 'w'))
 print 'finished writing'
 
 
