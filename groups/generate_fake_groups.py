@@ -1,5 +1,4 @@
-def gen():
-	num_students = 60
+def gen(num_students):
 	num_teachers = num_students/10
 	class_size = 20
 	friendship_group_size = 10
