@@ -30,21 +30,16 @@ class Simulation(object):
 	def step(self):
 		#empty queue for the step and move people
 		
-		print self.queue[self.stage]
 		
 		for person in self.queue[self.stage]:
 			try:
-				if person.nextLocation == 'free' and len(person.location.contents) == 1:
-					person.nextLocation = self.free()[0].name
-				elif person.nextLocation == 'free':
-					continue
-				person.move(self.locations[person.nextLocation])
 				new_time, new_location = person.movement.next()
 				self.queue[new_time].append(person)
+				person.move(self.locations[person.nextLocation])
 				person.nextLocation = new_location
 			except StopIteration:
 				# No more movement from that person
-				print str(person.name) + " end of cycle"
+				print tick, str(person.name) + " end of cycle"
 
 
 		
@@ -107,6 +102,7 @@ class People(object):
 		#elif self.infectcount > 5 and random.random() > 0.5: self.infected = True
 		#self.infectcount += 1
 		if self.infected == False:
+			print self.name
 			infection_chance = random.random()
 			if infection_chance <= chance_of_infection:
 					self.infected = True
@@ -129,11 +125,13 @@ class People(object):
 s = Simulation(ms)
 
 s.people[32].infected = True
+s.people[33].infected = True
+s.people[34].infected = True
+s.people[35].infected = True
 #format: key = tick, value = list of infected people
 infected_per_tick = dict()
 moves_per_tick = {}
 for tick in range(0, 2000):
-	print tick
 	moves = []
 	s.step()
 	moves_per_tick[tick] = moves
