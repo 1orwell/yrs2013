@@ -3,7 +3,7 @@
 #options
 size = 50
 regenerate_graph = False
-
+days = 1
 ###
 
 import igraph, pickle, random
@@ -98,3 +98,5 @@ def run_day(day):
 def multiple_runs(days):
     for day in range(days):
         run_day(day)
+
+multiple_runs(days)
