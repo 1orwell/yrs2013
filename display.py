@@ -11,8 +11,20 @@ red = pygame.image.load("images/red.png")
 
 def changeCoords(cs):
     x, y = cs
-    return ((x * 100) + width/2 + 30, (y* 100) + height /8 -150)
+    return ((x * width) , (y* height) )
 
+def normalise(cs):
+    smallest_x = min(x[0] for x in cs if x[0] < 0)
+    smallest_y = min(x[1] for x in cs if x[0] < 0)
+    # make all positive
+    cs = [[x[0] + smallest_x, x[1] + smallest_y] for x in cs]
+    #normalise
+    biggest_x = max((x[0] for x in cs), key=abs)
+    biggest_y = max((x[1] for x in cs), key=abs)
+    cs = [[x[0]/biggest_x, x[1]/biggest_y] for x in cs]
+    #sanity check
+    print  max((x[0] for x in cs), key=abs), max((x[1] for x in cs), key=abs)
+    return cs
 
 pygame.init()
 width, height = 1000, 600
@@ -23,6 +35,7 @@ coords = data['coords']
 mvs = data['moves']
 virus = data['virus']
 
+coords = normalise(coords)
 coords = map(changeCoords, coords)
 targets = coords[:]
 clock = pygame.time.Clock()

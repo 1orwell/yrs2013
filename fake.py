@@ -10,6 +10,7 @@ import igraph, pickle, random
 import math
 from collections import OrderedDict
 
+
 def run_day(day):
 
     output = './days/'+str(size)+'-'+str(day)+'.dat'
@@ -52,7 +53,9 @@ def run_day(day):
     order = [x[0] for x in order]
 
     #dump coords file
-
+    location = {x: x for x in order}
+    number = {x: 1 for x in order}
+    free = []
 
     #work out mininum global time
     mintime = 1000 #must be less than this
@@ -85,8 +88,19 @@ def run_day(day):
                     if current_time < t <= time:
                         current_max = pos
                         current_time = t
-                position = current_max
-                times[node][time] = position
+                times[node][time] = current_max 
+                number[location[node]] -= 1
+                number[current_max] += 1
+                if number[location[node]] == 0: free.append(location[node])
+                location[node] = current_max
+            else:
+                if number[location[node]] > 1:
+                    move_to = free.pop()
+                    times[node][time] = move_to 
+                    number[location[node]] -= 1
+                    number[move_to] += 1
+                    location[node] = move_to 
+                     
 	
         completed.append(node)
         f.close()
