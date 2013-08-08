@@ -9,11 +9,11 @@ days = 1
 import igraph, pickle, random
 import math
 from collections import OrderedDict
-    
+
 def run_day(day):
-    
+
     output = './days/'+str(size)+'-'+str(day)+'.dat'
-    
+
     try:
         #load graph if previously generated.
         g = pickle.load(open('dump.dat'))
@@ -30,7 +30,7 @@ def run_day(day):
                 u, v, w = map(int, edge.split())
                 g[u, v] = 1.0/w
         g.delete_vertices(g.vs(_degree_eq = 0))
-        pickle.dump(g,open('dump.dat','w'))   
+        pickle.dump(g,open('dump.dat','w'))
         print 'Finished'
 
 
@@ -60,14 +60,14 @@ def run_day(day):
             if x == 0: continue
             with open('./flu-data/moteFiles/node-'+str(x)) as fin:
                     line = fin.readline()
-                    if line: 
+                    if line:
                             t = int(line.split()[-1])
                             if t < mintime:
                                     mintime = t
 
 
     completed = []
-    times = {} 
+    times = {}
     print 'Generating movement file'
     for node in order:
         if node == 0: continue
