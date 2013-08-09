@@ -1,23 +1,28 @@
 import pickle
-import pygame, sys
+import pygame, sys, random
 
 #f = open('movement-50.dat')
 f = open('virus.dat')
 
 data = pickle.load(f)
 
+
+
 green = pygame.image.load("images/green.png")
+green = pygame.transform.scale(green, (5,5))
 red = pygame.image.load("images/red.png")
+red = pygame.transform.scale(red, (5,5))
 
 def changeCoords(cs):
     x, y = cs
-    return ((x * width) , (y* height) )
+    return ((x * (width*0.8)+50) , (y* (height*0.8)+50) )
 
 def normalise(cs):
-    smallest_x = min(x[0] for x in cs if x[0] < 0)
-    smallest_y = min(x[1] for x in cs if x[0] < 0)
+    smallest_x = min([x[0] for x in cs  ])
+    smallest_y = min([x[1] for x in cs ])
+    print smallest_x, smallest_y
     # make all positive
-    cs = [[x[0] + smallest_x, x[1] + smallest_y] for x in cs]
+    cs = [[x[0] - smallest_x, x[1] - smallest_y] for x in cs]
     #normalise
     biggest_x = max((x[0] for x in cs), key=abs)
     biggest_y = max((x[1] for x in cs), key=abs)
@@ -27,7 +32,7 @@ def normalise(cs):
     return cs
 
 pygame.init()
-width, height = 1000, 600
+width, height = 1000, 800
 screen = pygame.display.set_mode((width, height),0, 32)
 
 
@@ -42,7 +47,7 @@ clock = pygame.time.Clock()
 FPS = 24 #24 frames per second
 i = 0
 node_dict = {}
-FPC = 6
+FPC = 2
 
 
 
@@ -68,7 +73,10 @@ while True:
         print time/FPC
         if time/FPC in mvs:
             for person, move in mvs[time/FPC]:
-                targets[person-1] = coords[move-1]
+                x,y = coords[move-1]
+                x = x + random.randint(0,5)-2
+                y = y + random.randint(0,5)-2
+                targets[person-1] = [x,y] 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             pygame.quit()

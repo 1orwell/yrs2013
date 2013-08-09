@@ -1,7 +1,7 @@
 '''Generate necessary dump files'''
 
 #options
-size = 50
+size = 790 
 regenerate_graph = False
 days = 1
 ###
@@ -45,7 +45,7 @@ def run_day(day):
     #Fiddle layout
     print 'Working out layout'
     l = g.layout_kamada_kawai()
-    #igraph.plot(g, layout = l)
+    igraph.plot(g, layout = l)
 
     def distance(x, y): return math.sqrt((x[0] - y[0])**2 +  (x[1] - y[1])**2)
 
@@ -53,9 +53,6 @@ def run_day(day):
     order = [x[0] for x in order]
 
     #dump coords file
-    location = {x: x for x in order}
-    number = {x: 1 for x in order}
-    free = []
 
     #work out mininum global time
     mintime = 1000 #must be less than this
@@ -77,40 +74,36 @@ def run_day(day):
         times[node] = OrderedDict({0 : node})
         node_name  = 'node-'+str(node)
         f = open('./flu-data/moteFiles/'+node_name, 'r')
+        cs, movs = 0, 0
         for contact in f:
+            cs += 1
             line = map(int, contact.split())
             contact_id = line[0]
             time = (line[-1] - mintime + 1)
             if contact_id in completed:
+                movs += 1
                 current_max = 0
                 current_time = -1
                 for t, pos in times[contact_id].items():
-                    if current_time < t <= time:
+                    if current_time < t <= time and pos != 'free':
                         current_max = pos
                         current_time = t
                 times[node][time] = current_max 
-                number[location[node]] -= 1
-                number[current_max] += 1
-                if number[location[node]] == 0: free.append(location[node])
-                location[node] = current_max
             else:
-                if number[location[node]] > 1:
-                    move_to = free.pop()
-                    times[node][time] = move_to 
-                    number[location[node]] -= 1
-                    number[move_to] += 1
-                    location[node] = move_to 
-                     
+              times[node][time] = 'free' 
 	
         completed.append(node)
+        print node, cs, movs
         f.close()
 
     print 'Writing movement file'
     out = {'coords': l.coords, 'movement': times}
     pickle.dump(out, open(output, 'w'))
+    return times
 
 def multiple_runs(days):
     for day in range(days):
-        run_day(day)
+        times = run_day(day)
+    return times
 
-multiple_runs(days)
+times = multiple_runs(days)
