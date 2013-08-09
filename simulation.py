@@ -5,7 +5,8 @@ Format is
 
 '''
 #Options
-fin = './days/790-0.dat'
+#fin = './days/790-0.dat'
+fin = './groups/fake_groups.dat' 
 chance_of_infection = 1/36.0
 
 
@@ -144,7 +145,8 @@ for tick in range(0, 2000):
 
 print 'Simulation finished'
 print 'Writing to virus.dat file'
-output = 'virus.dat'
+#output = 'virus.dat'
+output = './groups/group_virus.dat'
 out = {'coords': coords, 'virus': infected_per_tick, 'moves': moves_per_tick}
 pickle.dump(out, open(output, 'w'))
 print 'finished writing'

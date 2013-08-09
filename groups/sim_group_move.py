@@ -44,8 +44,8 @@ wrap = 11 #11 positons per row, ie range(0,11) will give you 11 positions
 
 col_length = num_people/wrap
 
-coord_x_spacing = 2/wrap
-coord_y_spacing = 2/col_length
+coord_x_spacing = float(2.0/wrap)
+coord_y_spacing = float(2.0/col_length)
 
 for x in range(wrap):
 	for y in range(col_length):

@@ -45,7 +45,7 @@ def run_day(day):
     #Fiddle layout
     print 'Working out layout'
     l = g.layout_kamada_kawai()
-    igraph.plot(g, layout = l)
+    #igraph.plot(g, layout = l)
 
     def distance(x, y): return math.sqrt((x[0] - y[0])**2 +  (x[1] - y[1])**2)
 
