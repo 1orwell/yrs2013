@@ -4,6 +4,7 @@ import random
 
 #Options
 num_students = 60
+num_people = num_students + (num_students/10)
 
 
 period_list, fg_list = gen(num_students)
@@ -31,9 +32,30 @@ break = 30 ticks
 transition = 15 ticks
 '''
 
+#coords definition
+coords = []
+
+wrap = 11 #11 positons per row, ie range(0,11) will give you 11 positions
+
+#must pass coords as negative
+#x must be between -5 and -3
+#y must be between -28 and -26
+
+
+col_length = num_people/wrap
+
+coord_x_spacing = 2/wrap
+coord_y_spacing = 2/col_length
+
+for x in range(wrap):
+	for y in range(col_length):
+		t = (-5 + (x*coord_x_spacing)),(-28 + (y*coord_y_spacing))
+		coords.append(t)
+
+
 #initialises dict with everyone in starting locations
 movement_dict = dict()
-for person in range(num_students):
+for person in range(num_people):
 	movement_dict[person] = OrderedDict({0 : person})
 
 
@@ -56,16 +78,30 @@ wait_dict = {'class':55,'break':10,'lunch':55}
 
 
 #moves people (surprise, surprise)
-def move(person,new,current,time,event):
-	trans_time = 5
-	trans_tick = 3 * trans_time
+def move(person,new,current,time):
+	trans_time_mins = 5
+	trans_tick = 3 * trans_time_mins
 	
-	dist = person.location
-	for tick in range(trans_tick):
-		
-		movement_dict[person] = 
+	current_integer_x = current % wrap
+	current_integer_y = current // wrap
 	
+	new_integer_x = new % wrap
+	new_integer_y = new // wrap
 
+	x_dist = new_integer_x - current_integer_x
+	y_dist = new_integer_y - current_integer_y
+
+	x_dist_per_tick = x_dist // trans_tick
+	y_dist_per_tick = y_dist // trans_tick
+	x_moved = current_integer_x
+	y_moved = current_integer_y
+	for tick in range(trans_tick-1):
+		x_moved += x_dist_per_tick
+		y_moved += y_dist_per_tick
+		linear_pos = x_moved + (wrap*y_moved)
+		movement_dict[person][time+tick] = linear_pos
+	movement_dict[person][time+tick+1] = new
+		
 
 
 #this moves everyone to classes at start of day
@@ -75,7 +111,10 @@ time = 0
 wait = 0
 for c in class_list:
 	for person in c.members:
-		move(person,c.location.wait)
+		current = person #name is first position
+		new = c.location
+		event = 'class'
+		move(person,new,current,time)
 
 #this moves people when event changes
 period = 0
@@ -90,20 +129,36 @@ for event in sequence:
 		class_list = period_list[period]
 		for c in class_list:
 			for person in c.members:
-				current = 
+				current = movement_dict[person][time-wait] #current location
 				new = c.location
-				move(person,new,current,wait,event)
+				move(person,new,current,time)
+			for teacher in c.teachers:
+				current = movement_dict[teacher][time-wait] #current location
+				new = c.location
+				move(teacher,new,current,time)	
 	
 	#if event is break/lunch, base movement off friendship groups
 	if event == 'break' or event == 'lunch':
 		for fg in fg_list:
 			for person in fg.members:
-				current = movement_dict[person][
+				current = 
 				new = fg.location
-				move(person,new,current,time,event)
+				move(person,new,current,time)
 	
 	#if event is class, increment period so it knows which period and hence which classes to look at next class type
-	if event == 'class': period += 1	
+	if event == 'class': period += 1
+
+    out = {'coords': l.coords, 'movement': movement_dict}
+    pickle.dump(out, open(output, 'w'))
+
+	
+
+
+
+
+
+
+
 
 
 
