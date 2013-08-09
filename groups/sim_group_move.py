@@ -1,6 +1,6 @@
 from generate_fake_groups import *
 from collections import OrderedDict
-import random
+import random,pickle
 
 #Options
 num_students = 60
@@ -62,7 +62,7 @@ for person in range(num_people):
 #gives each class random locaton
 for class_list in period_list:
 	for c in class_list:
-		loc = random.randint(0,num_students-1)
+		loc = random.randint(0,(num_students-1))
 		c.location = loc
 
 #gives each friendship group a random location to take place in
@@ -82,25 +82,36 @@ def move(person,new,current,time):
 	trans_time_mins = 5
 	trans_tick = 3 * trans_time_mins
 	
-	current_integer_x = current % wrap
-	current_integer_y = current // wrap
-	
-	new_integer_x = new % wrap
-	new_integer_y = new // wrap
+	if new != current:
+		#work out where they are x and y from linear position
+		current_integer_x = current % wrap
+		current_integer_y = current // wrap
 
-	x_dist = new_integer_x - current_integer_x
-	y_dist = new_integer_y - current_integer_y
+		#ditto for new locations
+		new_integer_x = new % wrap
+		new_integer_y = new // wrap
 
-	x_dist_per_tick = x_dist // trans_tick
-	y_dist_per_tick = y_dist // trans_tick
-	x_moved = current_integer_x
-	y_moved = current_integer_y
-	for tick in range(trans_tick-1):
-		x_moved += x_dist_per_tick
-		y_moved += y_dist_per_tick
-		linear_pos = x_moved + (wrap*y_moved)
-		movement_dict[person][time+tick] = linear_pos
-	movement_dict[person][time+tick+1] = new
+		#work out how far they need to travel in x & y
+		x_dist = new_integer_x - current_integer_x
+		y_dist = new_integer_y - current_integer_y
+
+		#work out how far they need to move per tick
+		x_dist_per_tick = float(x_dist) / float(trans_tick)
+		y_dist_per_tick = float(y_dist) / float(trans_tick)
+
+		
+		x_moved = float(current_integer_x)
+		y_moved = float(current_integer_y)
+		for tick in range(trans_tick):
+			x_moved += x_dist_per_tick
+			y_moved += y_dist_per_tick
+			linear_pos = int(x_moved) + wrap*int(y_moved)
+			movement_dict[person][time+tick] = linear_pos
+	else:
+		movement_dict[person][time+14] = current
+		#on last tick move person rest of distance
+		#because it is further away than the intervals due to integer division
+		
 		
 
 
@@ -115,6 +126,13 @@ for c in class_list:
 		new = c.location
 		event = 'class'
 		move(person,new,current,time)
+	for person in c.teachers:
+		current = person #name is first position
+		new = c.location
+		event = 'class'
+		move(person,new,current,time)
+
+time += 15 #move time up as transitions have taken place
 
 #this moves people when event changes
 period = 0
@@ -125,31 +143,38 @@ for event in sequence:
 	time += wait_dict[event]
 	wait = wait_dict[event]
 	#if event is class, base movement off classes
-	if event == 'class'
+	if event == 'class':
 		class_list = period_list[period]
 		for c in class_list:
 			for person in c.members:
-				current = movement_dict[person][time-wait] #current location
+				
+				current = movement_dict[person][time-wait-1] #current location
 				new = c.location
 				move(person,new,current,time)
 			for teacher in c.teachers:
-				current = movement_dict[teacher][time-wait] #current location
-				new = c.location
-				move(teacher,new,current,time)	
+				#current = movement_dict[teacher][time-wait] #current location
+				#new = c.location
+				#move(teacher,new,current,time)
+				pass
+		#increment period so it knows which period and hence which classes to look at next class type
+		period += 1
 	
 	#if event is break/lunch, base movement off friendship groups
 	if event == 'break' or event == 'lunch':
 		for fg in fg_list:
 			for person in fg.members:
-				current = 
+				current = movement_dict[person][time-wait-1] #current location
 				new = fg.location
 				move(person,new,current,time)
+	 
 	
-	#if event is class, increment period so it knows which period and hence which classes to look at next class type
-	if event == 'class': period += 1
+	time += 15 #transitions take place so time must increase
 
-    out = {'coords': l.coords, 'movement': movement_dict}
-    pickle.dump(out, open(output, 'w'))
+
+
+out = {'coords': coords, 'movement': movement_dict}
+output = 'fake_groups.dat'
+pickle.dump(out, open(output, 'w'))
 
 	
 
