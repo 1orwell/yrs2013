@@ -1,21 +1,38 @@
 import pickle
-import pygame, sys
+import pygame, sys, random
 
 #f = open('movement-50.dat')
 f = open('virus.dat')
 
 data = pickle.load(f)
 
+
+
 green = pygame.image.load("images/green.png")
+green = pygame.transform.scale(green, (5,5))
 red = pygame.image.load("images/red.png")
+red = pygame.transform.scale(red, (5,5))
 
 def changeCoords(cs):
     x, y = cs
-    return ((x * 100) + width/2 + 30, (y* 100) + height /8 -150)
+    return ((x * (width*0.8)+50) , (y* (height*0.8)+50) )
 
+def normalise(cs):
+    smallest_x = min([x[0] for x in cs  ])
+    smallest_y = min([x[1] for x in cs ])
+    print smallest_x, smallest_y
+    # make all positive
+    cs = [[x[0] - smallest_x, x[1] - smallest_y] for x in cs]
+    #normalise
+    biggest_x = max((x[0] for x in cs), key=abs)
+    biggest_y = max((x[1] for x in cs), key=abs)
+    cs = [[x[0]/biggest_x, x[1]/biggest_y] for x in cs]
+    #sanity check
+    print  max((x[0] for x in cs), key=abs), max((x[1] for x in cs), key=abs)
+    return cs
 
 pygame.init()
-width, height = 1000, 600
+width, height = 1000, 800
 screen = pygame.display.set_mode((width, height),0, 32)
 
 
@@ -23,13 +40,14 @@ coords = data['coords']
 mvs = data['moves']
 virus = data['virus']
 
+coords = normalise(coords)
 coords = map(changeCoords, coords)
 targets = coords[:]
 clock = pygame.time.Clock()
 FPS = 24 #24 frames per second
 i = 0
 node_dict = {}
-FPC = 6
+FPC = 2
 
 
 
@@ -55,7 +73,10 @@ while True:
         print time/FPC
         if time/FPC in mvs:
             for person, move in mvs[time/FPC]:
-                targets[person-1] = coords[move-1]
+                x,y = coords[move-1]
+                x = x + random.randint(0,5)-2
+                y = y + random.randint(0,5)-2
+                targets[person-1] = [x,y] 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             pygame.quit()
