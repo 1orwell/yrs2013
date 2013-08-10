@@ -2,8 +2,8 @@ import pickle
 import pygame, sys, random
 
 #f = open('movement-50.dat')
-#f = open('virus.dat')
-f = open('./groups/group_virus.dat')
+f = open('virus.dat')
+#f = open('./groups/group_virus.dat')
 
 data = pickle.load(f)
 
