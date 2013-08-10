@@ -43,13 +43,41 @@ def run_day(day):
 
 
     #Fiddle layout
+    
     print 'Working out layout'
     l = g.layout_kamada_kawai()
+    '''
     #igraph.plot(g, layout = l)
 
+    generating own layout now, starting everyone at their own location
+    '''
+
+    #coords definition stolen from sim_group_move.py
+    coords = []
+
+    wrap = 11 #11 positions per row, ie range(0,11) will give you 11 positions
+
+    #must pass coords as negative
+    #x must be between -5 and -3
+    #y must be between -28 and -26
+    #
+
+
+    col_length = size/wrap
+
+    coord_x_spacing = float(2.0/wrap)
+    coord_y_spacing = float(2.0/col_length)
+
+    for x in range(wrap):
+            for y in range(col_length):
+                    t = (-5 + (x*coord_x_spacing)),(-28 + (y*coord_y_spacing))
+                    coords.append(t)
+
+    
+    
     def distance(x, y): return math.sqrt((x[0] - y[0])**2 +  (x[1] - y[1])**2)
 
-    order =  sorted(enumerate(l.coords), key = lambda x: distance(x[1], l.centroid()))
+    order =  sorted(enumerate(coords), key = lambda x: distance(x[1], l.centroid()))
     order = [x[0] for x in order]
 
     #dump coords file
@@ -96,7 +124,7 @@ def run_day(day):
         f.close()
 
     print 'Writing movement file'
-    out = {'coords': l.coords, 'movement': times}
+    out = {'coords': coords, 'movement': times}
     pickle.dump(out, open(output, 'w'))
     return times
 
