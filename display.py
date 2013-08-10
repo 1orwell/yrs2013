@@ -1,4 +1,5 @@
 import pickle
+import math
 import pygame, sys, random
 
 #f = open('movement-50.dat')
@@ -9,9 +10,9 @@ data = pickle.load(f)
 
 
 green = pygame.image.load("images/green.png")
-green = pygame.transform.scale(green, (5,5))
+#green = pygame.transform.scale(green, (5,5))
 red = pygame.image.load("images/red.png")
-red = pygame.transform.scale(red, (5,5))
+#red = pygame.transform.scale(red, (5,5))
 
 def changeCoords(cs):
     x, y = cs
@@ -76,7 +77,7 @@ while True:
                 x,y = coords[move-1]
                 x = x + random.randint(0,5)-2
                 y = y + random.randint(0,5)-2
-                targets[person-1] = [x,y] 
+                targets[person-1] = [x,y]
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             pygame.quit()
@@ -91,9 +92,11 @@ while True:
         target_x, target_y = tuple(targets[i])
         targetVector_x, targetVector_y = ((target_x - x)/FPC, (target_y - y)/FPC)
         if i-1 not in virus[time/FPC]:
-            people.append(screen.blit(green, (x+ targetVector_x, y + targetVector_y)))
+            rand_int = random.choice(range(5))
+            people.append(screen.blit(green, (x+ targetVector_x + rand_int, y + targetVector_y + rand_int)))
         else:
-            people.append(screen.blit(red, (x+ targetVector_x, y + targetVector_y)))
+            rand_int = random.choice(range(5))
+            people.append(screen.blit(red, (x+ targetVector_x + rand_int, y + targetVector_y)))
 
     people = people[num_of_nodes:]
 
