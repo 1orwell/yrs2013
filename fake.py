@@ -53,7 +53,7 @@ def run_day(day):
     #coords definition stolen from sim_group_move.py
     coords = []
 
-    wrap = 80 #80 positions per row, ie range(0,80) will give you 80 positions
+    wrap = 40 #80 positions per row, ie range(0,80) will give you 80 positions
 
     #must pass coords as negative
     #x must be between -5 and -3
