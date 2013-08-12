@@ -1,0 +1,99 @@
+<! Create the webpage and a header !>
+<html>
+<head>
+</head>
+<body>
+<h1>Hello World!! @.@<h1>
+<! create the canvas !>
+<canvas id="VIRUS" width="1000" height="500" style="border:1px solid #000000;"></canvas>
+<! Javascript starts !>
+<script src='virus.js'></script>
+<script>
+// create canvas and ctx
+var canvas = document.getElementById("VIRUS");
+var ctx = canvas.getContext("2d");
+var ROW_WIDTH = 38;
+var NO_OF_COLUMNS = 19;
+
+
+function drawNode(x, y, ctx, healthcolor) {
+	// set color to healthcolor
+	ctx.fillStyle = healthcolor;
+	// draw the node in that color
+	ctx.fillRect(x, y, 10, 10);
+}
+
+
+function clearScreen(ctx){
+	// clear the screen
+	ctx.clearRect(0, 0, 480, 480);
+}
+
+
+function moveit(x, y, ctx, speed, health, varname){
+	// create the node and input the color using health argument
+	drawNode(x, y, ctx, health);
+	//clear the screen
+	clearScreen(ctx);
+	//draw the node again
+	drawNode(x, y, ctx)
+	// wait then move the node
+	setTimeout(function () {moveit(x+1, y, ctx, speed)}, speed);
+}
+
+
+function drawHealthyGrid(ctx) {
+	var healthy_colour = "rgb(0, 155, 155)";
+	
+	for(j=0; j<NO_OF_COLUMNS; j++) {
+		for(i=0; i<ROW_WIDTH; i++) {
+			drawNode(i*20, j*20, ctx, healthy_colour);	
+		}
+	}
+}
+
+function xCoordFromNode(node_no) {
+	return (node_no % ROW_WIDTH);
+}
+
+function yCoordFromNode(node_no) {
+	return Math.floor(node_no / ROW_WIDTH)
+}
+
+function drawInfectedNode(node_no, ctx) {
+	
+	var x = xCoordFromNode(node_no);
+	
+	var y = yCoordFromNode(node_no);
+	
+	var infected_colour = "rgb(255, 0, 0)";
+	drawNode(x*20, y*20, ctx, infected_colour);
+}
+
+function drawInfectedNodes(nodeList, ctx) {
+	for (i=0; i< nodeList.length; i++){
+		drawInfectedNode(nodeList[i], ctx);
+	}
+}
+
+function drawNextTick(node, virus_data, ctx) {
+	if (node < Object.keys(virus_data).length) {
+		infected_nodes = virus_data[node.toString()];
+		drawInfectedNodes(infected_nodes, ctx);
+		setTimeout(function () { drawNextTick(node+1, virus_data, ctx) }, 100)
+	}
+}
+
+function showVirusSpread(virus_data, ctx) {
+	drawNextTick(600, virus_data, ctx);
+}
+
+drawHealthyGrid(ctx);
+showVirusSpread(virus_data, ctx);
+
+
+
+</script>
+<! the Javascript ends and all the tags close !>
+</body>
+</html>
