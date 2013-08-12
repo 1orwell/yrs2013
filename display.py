@@ -11,9 +11,9 @@ data = pickle.load(f)
 
 
 green = pygame.image.load("images/green.png")
-#green = pygame.transform.scale(green, (5,5))
+green = pygame.transform.scale(green, (5,5))
 red = pygame.image.load("images/red.png")
-#red = pygame.transform.scale(red, (5,5))
+red = pygame.transform.scale(red, (5,5))
 
 def changeCoords(cs):
     x, y = cs
