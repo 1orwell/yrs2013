@@ -1,11 +1,10 @@
+from groups import *
+import random
+
 def gen(num_students):
 	num_teachers = num_students/10
 	class_size = 20
 	friendship_group_size = 10
-
-	from groups import *
-	import random
-
 
 	period_list = []
 	friendship_group_list = []

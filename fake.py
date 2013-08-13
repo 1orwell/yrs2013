@@ -1,18 +1,21 @@
 '''Generate necessary dump files'''
 
 #options
-size = 790
+size = 100
 regenerate_graph = False
 days = 1
+force_layout = False 
+default = str(size)+'.dat'
+
 ###
 
-import igraph, pickle, random
+import igraph, pickle, random, os
 import math
 from collections import OrderedDict
 
-def run_day(day):
+def process(fout):
 
-    output = './days/'+str(size)+'-'+str(day)+'.dat'
+    output = os.path.join('data',fout)
 
     try:
         #load graph if previously generated.
@@ -40,45 +43,39 @@ def run_day(day):
     g.delete_vertices(sample)
     print g.summary()
 
-
+    
     #Fiddle layout
     print 'Working out layout'
-    l = g.layout_kamada_kawai()
-    '''
-    #igraph.plot(g, layout = l)
- 
-    generating own layout now, starting everyone at their own location
-     '''
+    if force_layout: 
+    
+      #starting everyone at their own location
 
-    #coords definition stolen from sim_group_move.py
-    coords = []
 
-    wrap = 40 #80 positions per row, ie range(0,80) will give you 80 positions
+      #coords definition stolen from sim_group_move.py
+      coords = []
 
-    #must pass coords as negative
-    #x must be between -5 and -3
-    #y must be between -28 and -26
-    #
+      wrap = 10 #positions per row
 
-    col_length = int(math.ceil(size/wrap))
+      col_length = int(math.ceil(size/wrap))
 
-    coord_x_spacing = 2.0/wrap
-    coord_y_spacing = 2.0/col_length
-
-    for x in range(wrap):
-        for y in range(col_length):
-            t = (-5 + (x*coord_x_spacing)),(-28 + (y*coord_y_spacing))
-            coords.append(t)
+      for y in range(col_length):
+        for x in range(wrap):
+          coords.append((x,y))
+      print coords
+      centre = (wrap/2, col_length/2)
 
     
-    
+    else: 
+      l = g.layout_kamada_kawai()
+      centre = l.centroid()
+      coords = l.coords
 
     def distance(x, y): return math.sqrt((x[0] - y[0])**2 +  (x[1] - y[1])**2)
-
-    order =  sorted(enumerate(coords), key = lambda x: distance(x[1], l.centroid()))
+      
+    #sort the coords by their position from the centre
+    order =  sorted(enumerate(coords), key = lambda x: distance(x[1], centre))
     order = [x[0] for x in order]
 
-    #dump coords file
 
 
     #work out mininum global time
@@ -122,8 +119,5 @@ def run_day(day):
     out = {'coords': coords, 'movement': times}
     pickle.dump(out, open(output, 'w'))
 
-def multiple_runs(days):
-    for day in range(days):
-        run_day(day)
-
-multiple_runs(days)
+if __name__ == '__main__':
+  process(default)

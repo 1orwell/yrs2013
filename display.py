@@ -1,19 +1,12 @@
 import pickle
 import math
-import pygame, sys, random
+import pygame, sys, random, os
 
-#f = open('movement-50.dat')
-f = open('virus.dat')
-#f = open('./groups/group_virus.dat')
+#options
 
-data = pickle.load(f)
+width, height = 1000, 800
 
-
-
-green = pygame.image.load("images/green.png")
-green = pygame.transform.scale(green, (5,5))
-red = pygame.image.load("images/red.png")
-red = pygame.transform.scale(red, (5,5))
+#
 
 def changeCoords(cs):
     x, y = cs
@@ -28,91 +21,95 @@ def normalise(cs):
     #normalise
     biggest_x = max((x[0] for x in cs), key=abs)
     biggest_y = max((x[1] for x in cs), key=abs)
-    cs = [[x[0]/biggest_x, x[1]/biggest_y] for x in cs]
+    cs = [[x[0]/float(biggest_x), x[1]/float(biggest_y)] for x in cs]
     #sanity check
     print  max((x[0] for x in cs), key=abs), max((x[1] for x in cs), key=abs)
     return cs
 
-pygame.init()
-width, height = 1000, 800
-screen = pygame.display.set_mode((width, height),0, 32)
+def display(fin):
+        fin = os.path.join('data', fin)
+        f = open(fin)
+        data = pickle.load(f)
+ 
+
+        coords = data['coords']
+        mvs = data['moves']
+        virus = data['virus']
+        
+        #load sprites
+        green = pygame.image.load("images/green.png")
+        green = pygame.transform.scale(green, (5,5))
+        red = pygame.image.load("images/red.png")
+        red = pygame.transform.scale(red, (5,5))
+
+        pygame.init()
+        screen = pygame.display.set_mode((width, height),0, 32)
+
+        coords = normalise(coords)
+        coords = map(changeCoords, coords)
+        targets = coords[:]
+        clock = pygame.time.Clock()
+        FPS = 24 #24 frames per second
+        i = 0
+        node_dict = {}
+        FPC = 2
 
 
-coords = data['coords']
-mvs = data['moves']
-virus = data['virus']
 
-coords = normalise(coords)
-coords = map(changeCoords, coords)
-targets = coords[:]
-clock = pygame.time.Clock()
-FPS = 24 #24 frames per second
-i = 0
-node_dict = {}
-FPC = 2
+        health_clr = (56, 48, 225)
+        infec_clr = (225, 54, 100)
 
+        people = []
+        num_of_nodes = len(coords)
 
+        screen.fill((225,225,225))
+        for i in range(num_of_nodes):
+            x, y = coords[i]
+            people.append(screen.blit(green, (x,y)))
 
-health_clr = (56, 48, 225)
-infec_clr = (225, 54, 100)
+        time =1
+        #while loop allows black screen to stay open and close properly
+        while True:
+            #PROCESSES
+            if time % FPC == FPC-1:
+                print virus[time/FPC]
+                print mvs[time/FPC]
+                print time/FPC
+                if time/FPC in mvs:
+                    #move required people for that tick
+                    for person, move in mvs[time/FPC]:
+                        x,y = coords[move-1]
+                        x = x + random.randint(0,5)-2
+                        y = y + random.randint(0,5)-2
+                        targets[person-1] = [x,y]
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+                    sys.exit()
+            
 
-people = []
-num_of_nodes = len(coords)
+            #draw objects
+            screen.fill((255,255,255))
+            for i, o in enumerate(people[::]):
+                #calculate the next position
+                x,y = o.x, o.y
+                target_x, target_y = tuple(targets[i])
+                targetVector_x, targetVector_y = ((target_x - x)/FPC, (target_y - y)/FPC)
+                rand_int = 0
+                #rand_int = random.randint(0,4)
+                if i-1 not in virus[time/FPC]:
+                    people.append(screen.blit(green, (x+ targetVector_x + rand_int, y + targetVector_y + rand_int)))
+                else:
+                    people.append(screen.blit(red, (x+ targetVector_x + rand_int, y + targetVector_y)))
+            
+            #purge queue
+            people = people[num_of_nodes:]
 
-screen.fill((225,225,225))
-for i in range(num_of_nodes):
-    x, y = coords[i]
-    people.append(screen.blit(green, (x,y)))
+            time += 1
+            pygame.display.flip() #makes sure everything is drawn on screen
 
-time =1
-#print ('time =' time)
-#while loop allows black screen to stay open and close properly
-while True:
-    #PROCESSES
-    if time % FPC == FPC-1:
-        print virus[time/FPC]
-        print mvs[time/FPC]
-        print time/FPC
-        if time/FPC in mvs:
-            for person, move in mvs[time/FPC]:
-                x,y = coords[move-1]
-                x = x + random.randint(0,5)-2
-                y = y + random.randint(0,5)-2
-                targets[person-1] = [x,y]
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            pygame.quit()
-            sys.exit()
-    #PROCESSES
-    #LOGIC
-    #LOGIC
-    #DRAW
-    screen.fill((255,255,255))
-    for i, o in enumerate(people[::]):
-        x,y = o.x, o.y
-        target_x, target_y = tuple(targets[i])
-        targetVector_x, targetVector_y = ((target_x - x)/FPC, (target_y - y)/FPC)
-        if i-1 not in virus[time/FPC]:
-            rand_int = random.choice(range(5))
-            people.append(screen.blit(green, (x+ targetVector_x + rand_int, y + targetVector_y + rand_int)))
-        else:
-            rand_int = random.choice(range(5))
-            people.append(screen.blit(red, (x+ targetVector_x + rand_int, y + targetVector_y)))
-
-    people = people[num_of_nodes:]
-
-    def moves():
-        pass
+            clock.tick(FPS) # sets clock tick (frames per second) to 24
 
 
-        #print time
-        #if time > 900:
-        #    screen.fill((225,225,225))
-
-
-    time += 1
-    pygame.display.flip() #makes sure everything is drawn on screen
-    #DRAW
-
-    clock.tick(FPS) # sets clock tick (frames per second) to 24
-
+if __name__ == '__main__':
+  display('virus.dat')
