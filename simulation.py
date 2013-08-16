@@ -24,7 +24,7 @@ def simulate(fin):
   ms = data['movement']
   
   s = simclass.Simulation(ms, chance_of_infection)
-
+  #set infected people
   s.people[32].infected = True
   s.people[33].infected = True
   s.people[34].infected = True
@@ -38,7 +38,7 @@ def simulate(fin):
   fileName, fileExtension = os.path.splitext(fin) 
   output = fileName+'-display'+fileExtension
   out = {'coords': coords, 'virus': s.infected_per_tick, 'moves': s.moves_per_tick}
-  pickle.dump(out, open(output, 'w'))
+  pickle.dump(out, open(output, 'wb'))
   print 'finished writing'
 
 if __name__ == '__main__':

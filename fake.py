@@ -33,7 +33,7 @@ def process(fout):
                 u, v, w = map(int, edge.split())
                 g[u, v] = 1.0/w
         g.delete_vertices(g.vs(_degree_eq = 0))
-        pickle.dump(g,open('dump.dat','w'))
+        pickle.dump(g,open('dump.dat','wb'))
         print 'Finished'
 
 
@@ -117,7 +117,7 @@ def process(fout):
 
     print 'Writing movement file'
     out = {'coords': coords, 'movement': times}
-    pickle.dump(out, open(output, 'w'))
+    pickle.dump(out, open(output, 'wb'))
 
 if __name__ == '__main__':
   process(default)
